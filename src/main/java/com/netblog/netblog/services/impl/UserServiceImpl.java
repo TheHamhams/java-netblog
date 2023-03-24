@@ -19,11 +19,20 @@ import java.util.List;
 import java.util.Optional;
 
 
+/**
+ * Implementation of UserService interface. Provides methods for managing users, such as
+ * creating, updating, deleting, and retrieving user information.
+ */
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
+    /**
+     * Constructor for UserServiceImpl. Initializes the userRepository and passwordEncoder fields.
+     * @param userRepository an instance of UserRepository used to access and manipulate user data
+     * @param passwordEncoder an instance of BCryptPasswordEncoder used to encode user passwords
+     */
     @Autowired
     public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
@@ -31,6 +40,13 @@ public class UserServiceImpl implements UserService {
     }
 
 //    GET
+
+    /**
+     * Retrieves user information for the given username.
+     * @param username the username of the user to retrieve
+     * @return a UserResponse object containing the user information
+     * @throws UsernameNotFoundException if the username is not found in the database
+     */
     @Override
     public UserResponse userById(String username) {
         User user =  this.userRepository.findByUsername(username)
@@ -39,6 +55,10 @@ public class UserServiceImpl implements UserService {
         return userToUserResponse(user);
     }
 
+    /**
+     * Retrieves information for all users in the database.
+     * @return a List of UserResponse objects containing user information
+     */
     @Override
     public List<UserResponse> allUsers() {
         List<User> users = this.userRepository.findAll();
@@ -48,6 +68,14 @@ public class UserServiceImpl implements UserService {
 
 
     //    POST
+
+    /**
+     * Creates a new user with the given information.
+     * @param request a CreateUserDto object containing the user information to create
+     * @return a UserResponse object containing the created user information
+     * @throws PasswordsDoNotMatchException if the password and passwordConfirm fields do not match
+     * @throws UsernameAlreadyExistsException if the given username already exists in the database
+     */
     @Override
     public UserResponse createUser(CreateUserDto request) {
         if (!request.getPassword().equals(request.getPasswordConfirm())) {
@@ -76,6 +104,16 @@ public class UserServiceImpl implements UserService {
     }
 
 //    PUT
+
+    /**
+     * Updates the user information for the given username.
+     * @param username the username of the user to update
+     * @param request an UpdateUserDto object containing the user information to update
+     * @return a UserResponse object containing the updated user information
+     * @throws PasswordFieldEmptyException if either the currentPassword or newPasswordConfirm fields are missing
+     * @throws PasswordsDoNotMatchException if the new passwords do not match or if the current password is incorrect
+     * @throws UsernameNotFoundException if the username is not found in the database
+     */
     @Override
     public UserResponse updateUser(String username, UpdateUserDto request) {
         User user = this.userRepository.findByUsername(username)
@@ -115,6 +153,12 @@ public class UserServiceImpl implements UserService {
     }
 
 //    DELETE
+
+    /**
+     * Deletes the user with the given username.
+     * @param username the username of the user to delete
+     * @throws UsernameNotFoundException if the username is not found in the database
+     */
     @Override
     public void deleteUser(String username) {
         User user = this.userRepository.findByUsername(username)
@@ -124,6 +168,12 @@ public class UserServiceImpl implements UserService {
     }
 
     //    Methods
+
+    /**
+     * Converts a User object to a UserResponse object.
+     * @param user the User object to convert
+     * @return a UserResponse object containing the user information
+     */
     private UserResponse userToUserResponse(User user) {
         UserResponse userResponse = new UserResponse();
 
