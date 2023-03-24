@@ -1,7 +1,9 @@
 package com.netblog.netblog.services.impl;
 
 import com.netblog.netblog.dtos.CreateUserDto;
+import com.netblog.netblog.dtos.UpdateUserDto;
 import com.netblog.netblog.dtos.UserResponse;
+import com.netblog.netblog.exceptions.PasswordFieldEmptyException;
 import com.netblog.netblog.exceptions.PasswordsDoNotMatchException;
 import com.netblog.netblog.exceptions.UsernameAlreadyExistsException;
 import com.netblog.netblog.exceptions.UsernameNotFoundException;
@@ -14,11 +16,11 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+
 
 @Service
 public class UserServiceImpl implements UserService {
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository) {
@@ -38,10 +40,9 @@ public class UserServiceImpl implements UserService {
     public List<UserResponse> allUsers() {
         List<User> users = this.userRepository.findAll();
 
-        List<UserResponse> userResponses = users.stream().map(this::userToUserResponse).toList();
-
-        return userResponses;
+        return users.stream().map(this::userToUserResponse).toList();
     }
+
 
     //    POST
     @Override
@@ -69,7 +70,40 @@ public class UserServiceImpl implements UserService {
         return userToUserResponse(user);
     }
 
+//    PUT
+    @Override
+    public UserResponse updateUser(String username, UpdateUserDto request) {
+        User user = this.userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Username not found"));
 
+        if (request.getFirstName() != null) {
+            user.setFirstName(request.getFirstName());
+        }
+
+        if (request.getLastName() != null) {
+            user.setLastName(request.getLastName());
+        }
+
+        if (request.getEmail() != null) {
+            user.setEmail(request.getEmail());
+        }
+
+        if (request.getNewPassword() != null) {
+            if (request.getCurrentPassword() == null || request.getNewPasswordConfirm() == null) {
+                throw new PasswordFieldEmptyException("One of your password fields is missing");
+            } else if (!request.getNewPassword().equals(request.getNewPasswordConfirm())) {
+                throw new PasswordsDoNotMatchException("New passwords do not match");
+            } else if (!user.getPassword().equals(request.getCurrentPassword())) {
+                throw new PasswordsDoNotMatchException("Current password is incorrect");
+            }
+
+            user.setPassword(request.getNewPassword());
+        }
+
+        this.userRepository.save(user);
+
+        return userToUserResponse(user);
+    }
 
 //    Methods
     private UserResponse userToUserResponse(User user) {

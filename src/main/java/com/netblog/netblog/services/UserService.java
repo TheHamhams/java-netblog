@@ -1,6 +1,6 @@
 package com.netblog.netblog.services;
 
-import com.netblog.netblog.models.User;
+import com.netblog.netblog.dtos.UpdateUserDto;
 import com.netblog.netblog.dtos.CreateUserDto;
 import com.netblog.netblog.dtos.UserResponse;
 
@@ -12,4 +12,6 @@ public interface UserService {
     UserResponse userById(String username);
 
     List<UserResponse> allUsers();
+
+    UserResponse updateUser(String username, UpdateUserDto request);
 }
