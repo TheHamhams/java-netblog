@@ -11,6 +11,7 @@ import com.netblog.netblog.models.User;
 import com.netblog.netblog.repositories.UserRepository;
 import com.netblog.netblog.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -21,10 +22,12 @@ import java.util.Optional;
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
 //    GET
@@ -58,11 +61,13 @@ public class UserServiceImpl implements UserService {
 
         User user = new User();
 
+        String passwordHash = this.passwordEncoder.encode((request.getPassword()));
+
         user.setUsername(request.getUsername());
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
         user.setEmail(request.getEmail());
-        user.setPassword(request.getPassword());
+        user.setPasswordHash(passwordHash);
         user.setCreated(new Date(System.currentTimeMillis()));
 
         this.userRepository.save(user);
@@ -89,15 +94,19 @@ public class UserServiceImpl implements UserService {
         }
 
         if (request.getNewPassword() != null) {
+            String currentPasswordHash = this.passwordEncoder.encode(request.getCurrentPassword());
+
             if (request.getCurrentPassword() == null || request.getNewPasswordConfirm() == null) {
                 throw new PasswordFieldEmptyException("One of your password fields is missing");
             } else if (!request.getNewPassword().equals(request.getNewPasswordConfirm())) {
                 throw new PasswordsDoNotMatchException("New passwords do not match");
-            } else if (!user.getPassword().equals(request.getCurrentPassword())) {
+            } else if (!user.getPasswordHash().equals(currentPasswordHash)) {
                 throw new PasswordsDoNotMatchException("Current password is incorrect");
             }
 
-            user.setPassword(request.getNewPassword());
+            String newPasswordHash = this.passwordEncoder.encode(request.getNewPassword());
+
+            user.setPasswordHash(newPasswordHash);
         }
 
         this.userRepository.save(user);

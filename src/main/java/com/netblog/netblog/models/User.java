@@ -22,7 +22,7 @@ public class User {
     private String firstName;
     private String lastName;
     private String email;
-    private String password;
+    private String passwordHash;
     private Date created;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
