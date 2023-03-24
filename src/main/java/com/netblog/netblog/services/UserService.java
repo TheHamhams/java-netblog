@@ -14,4 +14,6 @@ public interface UserService {
     List<UserResponse> allUsers();
 
     UserResponse updateUser(String username, UpdateUserDto request);
+
+    void deleteUser(String username);
 }

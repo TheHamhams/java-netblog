@@ -105,7 +105,16 @@ public class UserServiceImpl implements UserService {
         return userToUserResponse(user);
     }
 
-//    Methods
+//    DELETE
+    @Override
+    public void deleteUser(String username) {
+        User user = this.userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Username not found"));
+
+        this.userRepository.delete(user);
+    }
+
+    //    Methods
     private UserResponse userToUserResponse(User user) {
         UserResponse userResponse = new UserResponse();
 
@@ -113,6 +122,7 @@ public class UserServiceImpl implements UserService {
         userResponse.setFirstName(user.getFirstName());
         userResponse.setLastName(user.getLastName());
         userResponse.setEmail(user.getEmail());
+        userResponse.setCreated(user.getCreated());
 
         return userResponse;
     }
