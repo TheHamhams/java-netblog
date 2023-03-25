@@ -2,6 +2,7 @@ package com.netblog.netblog.services.impl;
 
 import com.netblog.netblog.dtos.CreatePostDto;
 import com.netblog.netblog.dtos.PostResponse;
+import com.netblog.netblog.exceptions.PostNotFoundException;
 import com.netblog.netblog.exceptions.UsernameNotFoundException;
 import com.netblog.netblog.models.Post;
 import com.netblog.netblog.models.User;
@@ -32,6 +33,21 @@ public class PostServiceImpl implements PostService {
         List<Post> posts = this.postRepository.findAll();
 
         return posts.stream().map(this::postToPostResponse).toList();
+    }
+
+    @Override
+    public List<PostResponse> allPostsByUserUsername(String username) {
+        List<Post> posts = this.userRepository.findByUsername(username).get().getPosts();
+
+        return posts.stream().map(this::postToPostResponse).toList();
+    }
+
+    @Override
+    public PostResponse postById(Integer id) {
+        Post post = this.postRepository.findById(id)
+                .orElseThrow(() -> new PostNotFoundException("Post id not found"));
+
+        return postToPostResponse(post);
     }
 
 //    POST

@@ -23,8 +23,18 @@ public class PostController {
 //    GET
 
     @GetMapping()
-    public ResponseEntity<List<PostResponse>> getAllPosts () {
+    public ResponseEntity<List<PostResponse>> getAllPosts() {
         return ResponseEntity.ok(this.postService.allPosts());
+    }
+
+    @GetMapping("/user/{username}")
+    public ResponseEntity<List<PostResponse>> getPostsByUsername(@PathVariable("username") String username) {
+        return ResponseEntity.ok(this.postService.allPostsByUserUsername(username));
+    }
+
+    @GetMapping("{id}")
+    public ResponseEntity<PostResponse> getPostById(@PathVariable("id") Integer id) {
+        return ResponseEntity.ok(this.postService.postById(id));
     }
 
 
