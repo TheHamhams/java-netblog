@@ -18,4 +18,6 @@ public interface PostService {
     PostResponse postById(Integer id);
 
     PostResponse updatePost(UpdatePostDto request, Integer id);
+
+    void deletePost(Integer id);
 }

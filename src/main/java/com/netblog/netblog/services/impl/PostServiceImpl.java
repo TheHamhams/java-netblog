@@ -92,6 +92,13 @@ public class PostServiceImpl implements PostService {
 
 //    DELETE
 
+    @Override
+    public void deletePost(Integer id) {
+        Post post = this.postRepository.findById(id)
+                .orElseThrow(() -> new PostNotFoundException("Post not found"));
+
+        this.postRepository.delete(post);
+    }
 
 //    Methods
 
