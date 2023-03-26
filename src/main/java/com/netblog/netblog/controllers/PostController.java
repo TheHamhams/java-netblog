@@ -3,6 +3,7 @@ package com.netblog.netblog.controllers;
 
 import com.netblog.netblog.dtos.CreatePostDto;
 import com.netblog.netblog.dtos.PostResponse;
+import com.netblog.netblog.dtos.UpdatePostDto;
 import com.netblog.netblog.services.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -47,7 +48,10 @@ public class PostController {
 
 //    PUT
 
-
+    @PutMapping("/update/{id}")
+    public ResponseEntity<PostResponse> putPost(@PathVariable("id") Integer id, @RequestBody UpdatePostDto request) {
+        return ResponseEntity.ok(this.postService.updatePost(request, id));
+    }
 
 //    DELETE
 
