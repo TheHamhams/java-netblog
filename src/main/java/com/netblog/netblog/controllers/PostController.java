@@ -38,6 +38,11 @@ public class PostController {
         return ResponseEntity.ok(this.postService.postById(id));
     }
 
+    @GetMapping("/recent")
+    public ResponseEntity<List<PostResponse>> getRecentPosts() {
+        return ResponseEntity.ok(this.postService.recentPosts());
+    }
+
 
 //    POST
 

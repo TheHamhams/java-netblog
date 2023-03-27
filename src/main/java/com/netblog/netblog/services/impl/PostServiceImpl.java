@@ -51,6 +51,13 @@ public class PostServiceImpl implements PostService {
         return postToPostResponse(post);
     }
 
+    @Override
+    public List<PostResponse> recentPosts() {
+        List<Post> posts = this.postRepository.findTop5ByOrderByCreatedDesc();
+
+        return posts.stream().map(this::postToPostResponse).toList();
+    }
+
 //    POST
 
     @Override

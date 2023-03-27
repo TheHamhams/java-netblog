@@ -20,4 +20,6 @@ public interface PostService {
     PostResponse updatePost(UpdatePostDto request, Integer id);
 
     void deletePost(Integer id);
+
+    List<PostResponse> recentPosts();
 }
